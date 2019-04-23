@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
@@ -28,10 +29,15 @@ public class MainActivity extends AppCompatActivity {
     private int screenWidth;
     private int screenHeight;
     private static final String TAG = "MainActivity";
+    private PopupWindow popupWindowBottom;
+    private PopupWindow popupWindowTop;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //去掉头 不能用
+        //requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
 
         initView();
@@ -61,8 +67,26 @@ public class MainActivity extends AppCompatActivity {
 
                     if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                         showPopwindow();
+                        showPopwindowTop();
                         // ToastUtil.showShort(getApplicationContext(),"点击了中间位置！");
                     }
+                }else if (x<mMiddleX/2){
+                    if (motionEvent.getAction()==MotionEvent.ACTION_UP){
+                        int currentItem = mVp_main.getCurrentItem();
+                        if (currentItem!=0){
+                            mVp_main.setCurrentItem(currentItem-1);
+                        }
+
+                        //ToastUtil.showShort(getApplicationContext(),"点击了左位置！");
+                    }
+
+                }else if (x>(screenWidth-mMiddleX/2)){
+                    if (motionEvent.getAction()==MotionEvent.ACTION_UP){
+                        int currentItem = mVp_main.getCurrentItem();
+                        mVp_main.setCurrentItem(currentItem+1);
+                        //ToastUtil.showShort(getApplicationContext(),"点击了右位置！");
+                    }
+
                 }
                 return false;
             }
@@ -79,20 +103,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void showPopwindow(){
+    public void showPopwindow() {
         View popView = View.inflate(this, R.layout.activity_popwindow, null);
-        final PopupWindow popupWindow = new PopupWindow(popView,WindowManager.LayoutParams.MATCH_PARENT,WindowManager.LayoutParams.WRAP_CONTENT);
-        popupWindow.setFocusable(true);  //获得焦点
-        popupWindow.setTouchable(true);  //可以触摸
-        popupWindow.setOutsideTouchable(true);
+        popupWindowBottom = new PopupWindow(popView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        popupWindowBottom.setFocusable(true);  //获得焦点
+        popupWindowBottom.setTouchable(true);  //可以触摸
+        popupWindowBottom.setOutsideTouchable(true);
 
-        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+        popupWindowBottom.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
-
+                popupWindowTop.dismiss();
             }
         });
-        popupWindow.setBackgroundDrawable(new BitmapDrawable());
+        popupWindowBottom.setBackgroundDrawable(new BitmapDrawable());
 
         TranslateAnimation animation = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, 0, Animation.RELATIVE_TO_PARENT, 0, Animation.RELATIVE_TO_PARENT,
                 1, Animation.RELATIVE_TO_PARENT, 0);
@@ -104,36 +128,78 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //上一张
-
                 int currentItem = mVp_main.getCurrentItem();
 
-                //Log.e(TAG, "onClick: 点击了下"+currentItem );
-                mVp_main.setCurrentItem(currentItem-1);
-               // Log.e(TAG, "onClick: 点击了下"+currentItem );
-//                Log.e(TAG, "onClick: 点击了上" );
-                //popupWindow.dismiss();
+                mVp_main.setCurrentItem(currentItem - 1);
+
             }
         });
         popView.findViewById(R.id.tv_next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //下一张
-
                 int currentItem = mVp_main.getCurrentItem();
-               // Log.e(TAG, "onClick: 点击了下"+currentItem );
-                mVp_main.setCurrentItem(currentItem+1);
-               // Log.e(TAG, "onClick: 点击了下"+currentItem );
-                //popupWindow.dismiss();
+                mVp_main.setCurrentItem(currentItem + 1);
+
             }
         });
 
-        if (popupWindow.isShowing()){
-            popupWindow.dismiss();
+        if (popupWindowBottom.isShowing()) {
+            popupWindowBottom.dismiss();
+
         }
 
         //显示popwindow
-        popupWindow.showAtLocation(this.findViewById(R.id.v_pop), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL,0,0);
+        popupWindowBottom.showAtLocation(this.findViewById(R.id.v_pop), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
         popView.startAnimation(animation);
     }
 
+
+    public void showPopwindowTop() {
+        View popView = View.inflate(this, R.layout.activity_popwindowtop, null);
+        popupWindowTop = new PopupWindow(popView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        popupWindowTop.setFocusable(false);  //获得焦点
+        popupWindowTop.setTouchable(true);  //可以触摸
+        popupWindowTop.setOutsideTouchable(false);
+
+        popupWindowTop.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+
+            }
+        });
+        popupWindowTop.setBackgroundDrawable(new BitmapDrawable());
+
+        TranslateAnimation animation = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, 0, Animation.RELATIVE_TO_PARENT, 0, Animation.RELATIVE_TO_PARENT,
+                -1, Animation.RELATIVE_TO_PARENT, 0);
+        //动画变化的速率  开始较慢  后来变快
+        animation.setInterpolator(new AccelerateInterpolator());
+        animation.setDuration(200);
+        popView.findViewById(R.id.iv_back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //回退按钮
+                finish();
+            }
+        });
+
+
+        if (popupWindowTop.isShowing()) {
+            popupWindowTop.dismiss();
+        }
+
+
+
+        //显示popwindow
+        popupWindowTop.showAtLocation(this.findViewById(R.id.v_pop), Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
+        popView.startAnimation(animation);
+    }
+
+    //退出之前结束掉
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        popupWindowBottom.dismiss();
+        popupWindowTop.dismiss();
+    }
 }

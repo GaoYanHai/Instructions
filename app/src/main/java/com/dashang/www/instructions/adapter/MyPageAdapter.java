@@ -25,17 +25,14 @@ public class MyPageAdapter extends PagerAdapter {
         mList = list;
     }
 
-
     @Override
     public int getCount() {
         return mList.size();
     }
-
     @Override
     public boolean isViewFromObject(@NonNull View view, @NonNull Object o) {
         return view == o;
     }
-
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
@@ -47,7 +44,6 @@ public class MyPageAdapter extends PagerAdapter {
         return imageView;
 
     }
-
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         //移除页面
