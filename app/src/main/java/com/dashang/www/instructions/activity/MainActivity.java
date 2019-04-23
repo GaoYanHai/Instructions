@@ -4,22 +4,19 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 
 import com.dashang.www.instructions.R;
 import com.dashang.www.instructions.adapter.MyPageAdapter;
-import com.dashang.www.instructions.utils.ToastUtil;
 
 import java.util.ArrayList;
 
@@ -31,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private PopupWindow popupWindowBottom;
     private PopupWindow popupWindowTop;
+    private ProgressBar mPb_progress;
 
 
     @Override
@@ -38,10 +36,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //去掉头 不能用
         //requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //去掉状态栏
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
         initView();
-        WindowManager windowManager = this.getWindowManager();
+        //WindowManager windowManager = this.getWindowManager();
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         screenHeight = displayMetrics.heightPixels;
         screenWidth = displayMetrics.widthPixels;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initView() {
+
         mVp_main = findViewById(R.id.vp_main);
         MyPageAdapter myPageAdapter = new MyPageAdapter(this);
         myPageAdapter.getData(getData());
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                     if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                         showPopwindow();
                         showPopwindowTop();
+                        mPb_progress.setProgress(mVp_main.getCurrentItem()+1);
                         // ToastUtil.showShort(getApplicationContext(),"点击了中间位置！");
                     }
                 }else if (x<mMiddleX/2){
@@ -75,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
                         int currentItem = mVp_main.getCurrentItem();
                         if (currentItem!=0){
                             mVp_main.setCurrentItem(currentItem-1);
+                            mPb_progress.setProgress(currentItem);
                         }
 
                         //ToastUtil.showShort(getApplicationContext(),"点击了左位置！");
@@ -84,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
                     if (motionEvent.getAction()==MotionEvent.ACTION_UP){
                         int currentItem = mVp_main.getCurrentItem();
                         mVp_main.setCurrentItem(currentItem+1);
+                        mPb_progress.setProgress(currentItem);
                         //ToastUtil.showShort(getApplicationContext(),"点击了右位置！");
                     }
 
@@ -129,8 +134,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //上一张
                 int currentItem = mVp_main.getCurrentItem();
-
                 mVp_main.setCurrentItem(currentItem - 1);
+                mPb_progress.setProgress(mVp_main.getCurrentItem()+1);
 
             }
         });
@@ -139,10 +144,17 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //下一张
                 int currentItem = mVp_main.getCurrentItem();
+
                 mVp_main.setCurrentItem(currentItem + 1);
+                mPb_progress.setProgress(mVp_main.getCurrentItem()+1);
 
             }
         });
+
+        //设置进度条
+        mPb_progress = popView.findViewById(R.id.pb_progress);
+        mPb_progress.setMax(getData().size());
+
 
         if (popupWindowBottom.isShowing()) {
             popupWindowBottom.dismiss();
@@ -187,8 +199,6 @@ public class MainActivity extends AppCompatActivity {
         if (popupWindowTop.isShowing()) {
             popupWindowTop.dismiss();
         }
-
-
 
         //显示popwindow
         popupWindowTop.showAtLocation(this.findViewById(R.id.v_pop), Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
