@@ -1,9 +1,13 @@
 package com.dashang.www.instructions.activity;
 
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -14,9 +18,11 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.dashang.www.instructions.R;
 import com.dashang.www.instructions.adapter.MyPageAdapter;
+import com.dashang.www.instructions.adapter.MyRecyclerViewAdapter;
 
 import java.util.ArrayList;
 
@@ -29,6 +35,9 @@ public class MainActivity extends AppCompatActivity {
     private PopupWindow popupWindowBottom;
     private PopupWindow popupWindowTop;
     private ProgressBar mPb_progress;
+    private TextView mTv_numberpb;
+    private RecyclerView mRlv_recycler;
+    private DrawerLayout mDl_layout;
 
 
     @Override
@@ -42,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initView();
-        //WindowManager windowManager = this.getWindowManager();
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         screenHeight = displayMetrics.heightPixels;
         screenWidth = displayMetrics.widthPixels;
@@ -50,6 +58,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initView() {
+        mDl_layout = findViewById(R.id.dl_layout);
+        //关闭手势滑动  只能点击出现
+        mDl_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        //去掉阴影效果  效果设置为透明的
+        mDl_layout.setScrimColor(Color.TRANSPARENT);
+        mRlv_recycler = findViewById(R.id.rlv_recycler);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        //设置纵向显示
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRlv_recycler.setLayoutManager(linearLayoutManager);
+        MyRecyclerViewAdapter myRecyclerViewAdapter = new MyRecyclerViewAdapter(this, getData());
+
+        mRlv_recycler.setAdapter(myRecyclerViewAdapter);
 
         mVp_main = findViewById(R.id.vp_main);
         MyPageAdapter myPageAdapter = new MyPageAdapter(this);
@@ -71,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
                         showPopwindow();
                         showPopwindowTop();
                         mPb_progress.setProgress(mVp_main.getCurrentItem()+1);
+                        //设置进度数字
+                        mTv_numberpb.setText("第"+mPb_progress.getProgress()+"页"+"/"+"共"+mPb_progress.getMax()+"页");
                         // ToastUtil.showShort(getApplicationContext(),"点击了中间位置！");
                     }
                 }else if (x<mMiddleX/2){
@@ -78,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                         int currentItem = mVp_main.getCurrentItem();
                         if (currentItem!=0){
                             mVp_main.setCurrentItem(currentItem-1);
-                            mPb_progress.setProgress(currentItem);
+
                         }
 
                         //ToastUtil.showShort(getApplicationContext(),"点击了左位置！");
@@ -88,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                     if (motionEvent.getAction()==MotionEvent.ACTION_UP){
                         int currentItem = mVp_main.getCurrentItem();
                         mVp_main.setCurrentItem(currentItem+1);
-                        mPb_progress.setProgress(currentItem);
+
                         //ToastUtil.showShort(getApplicationContext(),"点击了右位置！");
                     }
 
@@ -136,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
                 int currentItem = mVp_main.getCurrentItem();
                 mVp_main.setCurrentItem(currentItem - 1);
                 mPb_progress.setProgress(mVp_main.getCurrentItem()+1);
+                mTv_numberpb.setText("第"+mPb_progress.getProgress()+"页"+"/"+"共"+mPb_progress.getMax()+"页");
 
             }
         });
@@ -147,18 +171,21 @@ public class MainActivity extends AppCompatActivity {
 
                 mVp_main.setCurrentItem(currentItem + 1);
                 mPb_progress.setProgress(mVp_main.getCurrentItem()+1);
+                mTv_numberpb.setText("第"+mPb_progress.getProgress()+"页"+"/"+"共"+mPb_progress.getMax()+"页");
 
             }
         });
+
 
         //设置进度条
         mPb_progress = popView.findViewById(R.id.pb_progress);
         mPb_progress.setMax(getData().size());
 
+        mTv_numberpb = popView.findViewById(R.id.tv_numberpb);
+
 
         if (popupWindowBottom.isShowing()) {
             popupWindowBottom.dismiss();
-
         }
 
         //显示popwindow
@@ -168,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void showPopwindowTop() {
+
         View popView = View.inflate(this, R.layout.activity_popwindowtop, null);
         popupWindowTop = new PopupWindow(popView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         popupWindowTop.setFocusable(false);  //获得焦点
@@ -195,6 +223,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        popView.findViewById(R.id.tv_catalog).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //目录按钮
+                mDl_layout.openDrawer(Gravity.RIGHT);
+                popupWindowTop.dismiss();
+                popupWindowBottom.dismiss();
+            }
+        });
 
         if (popupWindowTop.isShowing()) {
             popupWindowTop.dismiss();
