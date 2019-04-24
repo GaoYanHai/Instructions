@@ -9,14 +9,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.dashang.www.instructions.R;
-import com.dashang.www.instructions.utils.ToastUtil;
 
 import java.util.ArrayList;
 
-public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.MyHolder> {
+public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.MyHolder>{
 
     private Context context;
     private ArrayList<String> list;
+    //声明监听的接口变量
+    private OnItemClickListener onItemClickListener;
 
     public MyRecyclerViewAdapter(Context context, ArrayList<String> list){
         this.context = context;
@@ -29,6 +30,8 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     public MyHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.catalog_item, null);
         MyHolder myHolder = new MyHolder(view);
+        //通过接口名调用方法
+
         return myHolder;
     }
 
@@ -39,13 +42,17 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         int end = list.get(i).lastIndexOf(".");
         String pathname = list.get(i).substring(star+1,end);
         myHolder.textView.setText(pathname);
-
+        //设置item的点击事件 通过接口暴露给外界
         myHolder.textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ToastUtil.showShort(context,"点击了"+i);
+                if (onItemClickListener !=null){
+                    //接口
+                    onItemClickListener.onclick(view,i);
+                }
             }
         });
+
     }
 
     @Override
@@ -62,6 +69,23 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         }
 
     }
+
+    /**
+     *按钮点击事件需要的方法
+     */
+    public void SetOnItemClickListener(OnItemClickListener onItemClickListener){
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    /**
+     * 按钮点击事件对应的接口
+     */
+    public interface OnItemClickListener {
+        public void onclick( View view,int position);
+    }
+
+
+
 
 }
 

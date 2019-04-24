@@ -26,7 +26,7 @@ import com.dashang.www.instructions.adapter.MyRecyclerViewAdapter;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     private ViewPager mVp_main;
     private int screenWidth;
@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mTv_numberpb;
     private RecyclerView mRlv_recycler;
     private DrawerLayout mDl_layout;
+    private MyRecyclerViewAdapter myRecyclerViewAdapter;
 
 
     @Override
@@ -55,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
         screenHeight = displayMetrics.heightPixels;
         screenWidth = displayMetrics.widthPixels;
 
+
+
     }
 
     public void initView() {
@@ -68,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         //设置纵向显示
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRlv_recycler.setLayoutManager(linearLayoutManager);
-        MyRecyclerViewAdapter myRecyclerViewAdapter = new MyRecyclerViewAdapter(this, getData());
+        myRecyclerViewAdapter = new MyRecyclerViewAdapter(this, getData());
 
         mRlv_recycler.setAdapter(myRecyclerViewAdapter);
 
@@ -76,6 +79,16 @@ public class MainActivity extends AppCompatActivity {
         MyPageAdapter myPageAdapter = new MyPageAdapter(this);
         myPageAdapter.getData(getData());
         mVp_main.setAdapter(myPageAdapter);
+        //回调方法  从adapter中传递出被点击的item的值
+        myRecyclerViewAdapter.SetOnItemClickListener(new MyRecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onclick(View view, int position) {
+               // ToastUtil.showShort(getApplicationContext(),"点击了"+position);
+                mVp_main.setCurrentItem(position);
+                mDl_layout.closeDrawer(Gravity.RIGHT);
+            }
+        });
+
 
         mVp_main.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -249,4 +262,5 @@ public class MainActivity extends AppCompatActivity {
         popupWindowBottom.dismiss();
         popupWindowTop.dismiss();
     }
+
 }
