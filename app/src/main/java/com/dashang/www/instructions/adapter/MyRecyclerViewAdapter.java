@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -34,14 +35,24 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyHolder myHolder, final int i) {
+    public void onBindViewHolder(@NonNull final MyHolder myHolder, final int i) {
         //取出文件的名字
         int star = list.get(i).lastIndexOf("/");
         int end = list.get(i).lastIndexOf(".");
         String pathname = list.get(i).substring(star + 1, end);
         myHolder.textView.setText(pathname);
         //设置item的点击事件 通过接口暴露给外界
-        myHolder.textView.setOnClickListener(new View.OnClickListener() {
+//        myHolder.textView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (onItemClickListener != null) {
+//                    //接口
+//                    onItemClickListener.onclick(view, i);
+//                }
+//            }
+//        });
+
+        myHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (onItemClickListener != null) {
@@ -51,11 +62,12 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
             }
         });
 
+
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return list==null?0:list.size();
     }
 
     class MyHolder extends RecyclerView.ViewHolder {

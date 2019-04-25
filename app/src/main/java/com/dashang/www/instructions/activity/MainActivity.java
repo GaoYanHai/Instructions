@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //获取了数据源
     public ArrayList<String> getData() {
         ArrayList<String> strings = new ArrayList<>();
         strings.add("/sdcard/images/1.jpg");
@@ -262,5 +263,23 @@ public class MainActivity extends AppCompatActivity {
         popupWindowBottom.dismiss();
         popupWindowTop.dismiss();
     }
+
+
+    //获取文件夹下的所有文件
+//    public static ArrayList<String> getFilesAllName(String path) {
+//        File file=new File(path);
+//        File[] files=file.listFiles();
+//        if (files == null){
+//            Log.e("error","空目录");
+//            return null;
+//        }
+//        List<String> s = new ArrayList<>();
+//        for(int i =0;i<files.length;i++){
+//            s.add(files[i].getAbsolutePath());
+//        }
+//        return s;
+//    }}
+
+
 
 }
