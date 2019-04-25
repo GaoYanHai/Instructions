@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -26,7 +27,7 @@ import com.dashang.www.instructions.adapter.MyRecyclerViewAdapter;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     private ViewPager mVp_main;
     private int screenWidth;
@@ -57,7 +58,6 @@ public class MainActivity extends AppCompatActivity{
         screenWidth = displayMetrics.widthPixels;
 
 
-
     }
 
     public void initView() {
@@ -72,8 +72,10 @@ public class MainActivity extends AppCompatActivity{
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRlv_recycler.setLayoutManager(linearLayoutManager);
         myRecyclerViewAdapter = new MyRecyclerViewAdapter(this, getData());
-
         mRlv_recycler.setAdapter(myRecyclerViewAdapter);
+        //添加分割线
+        mRlv_recycler.addItemDecoration(new DividerItemDecoration(
+                this, DividerItemDecoration.VERTICAL));
 
         mVp_main = findViewById(R.id.vp_main);
         MyPageAdapter myPageAdapter = new MyPageAdapter(this);
@@ -83,7 +85,7 @@ public class MainActivity extends AppCompatActivity{
         myRecyclerViewAdapter.SetOnItemClickListener(new MyRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onclick(View view, int position) {
-               // ToastUtil.showShort(getApplicationContext(),"点击了"+position);
+                // ToastUtil.showShort(getApplicationContext(),"点击了"+position);
                 mVp_main.setCurrentItem(position);
                 mDl_layout.closeDrawer(Gravity.RIGHT);
             }
@@ -104,26 +106,24 @@ public class MainActivity extends AppCompatActivity{
                     if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                         showPopwindow();
                         showPopwindowTop();
-                        mPb_progress.setProgress(mVp_main.getCurrentItem()+1);
+                        mPb_progress.setProgress(mVp_main.getCurrentItem() + 1);
                         //设置进度数字
-                        mTv_numberpb.setText("第"+mPb_progress.getProgress()+"页"+"/"+"共"+mPb_progress.getMax()+"页");
+                        mTv_numberpb.setText("第" + mPb_progress.getProgress() + "页" + "/" + "共" + mPb_progress.getMax() + "页");
                         // ToastUtil.showShort(getApplicationContext(),"点击了中间位置！");
                     }
-                }else if (x<mMiddleX/2){
-                    if (motionEvent.getAction()==MotionEvent.ACTION_UP){
+                } else if (x < mMiddleX / 2) {
+                    if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                         int currentItem = mVp_main.getCurrentItem();
-                        if (currentItem!=0){
-                            mVp_main.setCurrentItem(currentItem-1);
-
+                        if (currentItem != 0) {
+                            mVp_main.setCurrentItem(currentItem - 1);
                         }
-
                         //ToastUtil.showShort(getApplicationContext(),"点击了左位置！");
                     }
 
-                }else if (x>(screenWidth-mMiddleX/2)){
-                    if (motionEvent.getAction()==MotionEvent.ACTION_UP){
+                } else if (x > (screenWidth - mMiddleX / 2)) {
+                    if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                         int currentItem = mVp_main.getCurrentItem();
-                        mVp_main.setCurrentItem(currentItem+1);
+                        mVp_main.setCurrentItem(currentItem + 1);
 
                         //ToastUtil.showShort(getApplicationContext(),"点击了右位置！");
                     }
@@ -171,8 +171,8 @@ public class MainActivity extends AppCompatActivity{
                 //上一张
                 int currentItem = mVp_main.getCurrentItem();
                 mVp_main.setCurrentItem(currentItem - 1);
-                mPb_progress.setProgress(mVp_main.getCurrentItem()+1);
-                mTv_numberpb.setText("第"+mPb_progress.getProgress()+"页"+"/"+"共"+mPb_progress.getMax()+"页");
+                mPb_progress.setProgress(mVp_main.getCurrentItem() + 1);
+                mTv_numberpb.setText("第" + mPb_progress.getProgress() + "页" + "/" + "共" + mPb_progress.getMax() + "页");
 
             }
         });
@@ -183,8 +183,8 @@ public class MainActivity extends AppCompatActivity{
                 int currentItem = mVp_main.getCurrentItem();
 
                 mVp_main.setCurrentItem(currentItem + 1);
-                mPb_progress.setProgress(mVp_main.getCurrentItem()+1);
-                mTv_numberpb.setText("第"+mPb_progress.getProgress()+"页"+"/"+"共"+mPb_progress.getMax()+"页");
+                mPb_progress.setProgress(mVp_main.getCurrentItem() + 1);
+                mTv_numberpb.setText("第" + mPb_progress.getProgress() + "页" + "/" + "共" + mPb_progress.getMax() + "页");
 
             }
         });
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity{
         //设置进度条
         mPb_progress = popView.findViewById(R.id.pb_progress);
         mPb_progress.setMax(getData().size());
-
+        //设置进度条上的数字进度
         mTv_numberpb = popView.findViewById(R.id.tv_numberpb);
 
 
