@@ -10,6 +10,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,7 +25,9 @@ import android.widget.TextView;
 import com.dashang.www.instructions.R;
 import com.dashang.www.instructions.adapter.MyPageAdapter;
 import com.dashang.www.instructions.adapter.MyRecyclerViewAdapter;
+import com.dashang.www.instructions.utils.ToastUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mVp_main;
     private int screenWidth;
     private int screenHeight;
+    private String path = "/sdcard/images/";
     private static final String TAG = "MainActivity";
     private PopupWindow popupWindowBottom;
     private PopupWindow popupWindowTop;
@@ -56,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         screenHeight = displayMetrics.heightPixels;
         screenWidth = displayMetrics.widthPixels;
+
 
 
     }
@@ -133,15 +138,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    //获取了数据源
-    public ArrayList<String> getData() {
-        ArrayList<String> strings = new ArrayList<>();
-        strings.add("/sdcard/images/1.jpg");
-        strings.add("/sdcard/images/2.jpg");
-        strings.add("/sdcard/images/3.jpg");
-        return strings;
     }
 
 
@@ -266,19 +262,20 @@ public class MainActivity extends AppCompatActivity {
 
 
     //获取文件夹下的所有文件
-//    public static ArrayList<String> getFilesAllName(String path) {
-//        File file=new File(path);
-//        File[] files=file.listFiles();
-//        if (files == null){
-//            Log.e("error","空目录");
-//            return null;
-//        }
-//        List<String> s = new ArrayList<>();
-//        for(int i =0;i<files.length;i++){
-//            s.add(files[i].getAbsolutePath());
-//        }
-//        return s;
-//    }}
+    public  ArrayList<String> getData() {
+        File file=new File(path);
+        File[] files=file.listFiles();
+        if (files == null){
+            Log.e("error","空目录");
+            ToastUtil.showLong(this,"文件不存在或已被删除！");
+            return null;
+        }
+        ArrayList<String> s = new ArrayList<>();
+        for(int i =0;i<files.length;i++){
+            s.add(files[i].getAbsolutePath());
+        }
+        return s;
+    }
 
 
 
