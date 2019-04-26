@@ -54,8 +54,6 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-        //每次启动都要获取数据
-//        ArrayList<String> data = getData();
 
         initView();
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
