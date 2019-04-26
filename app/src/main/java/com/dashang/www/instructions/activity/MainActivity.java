@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mVp_main;
     private int screenWidth;
     private int screenHeight;
-    private String path = "/sdcard/images/";
     private static final String TAG = "MainActivity";
     private PopupWindow popupWindowBottom;
     private PopupWindow popupWindowTop;
@@ -55,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+        //每次启动都要获取数据
+//        ArrayList<String> data = getData();
 
         initView();
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
@@ -262,7 +263,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     //获取文件夹下的所有文件
-    public  ArrayList<String> getData() {
+    public ArrayList<String> getData() {
+        String path = "/sdcard/images/";
         File file=new File(path);
         File[] files=file.listFiles();
         if (files == null){
@@ -272,10 +274,27 @@ public class MainActivity extends AppCompatActivity {
         }
         ArrayList<String> s = new ArrayList<>();
         for(int i =0;i<files.length;i++){
-            s.add(files[i].getAbsolutePath());
+            if (checkIsImageFile(files[i].getAbsolutePath())){
+                s.add(files[i].getAbsolutePath());
+            }
         }
         return s;
     }
+
+
+    //过滤文件夹
+    private boolean checkIsImageFile(String fName) {
+        boolean isImageFile = false;
+        // 获取扩展名     tolowerCase 将字母转换成小写
+        String FileEnd = fName.substring(fName.lastIndexOf(".") + 1,fName.length()).toLowerCase();
+        if (FileEnd.equals("jpg") || FileEnd.equals("png") || FileEnd.equals("gif") || FileEnd.equals("jpeg")|| FileEnd.equals("bmp") ) {
+            isImageFile = true;
+        } else {
+            isImageFile = false;
+        }
+        return isImageFile;
+    }
+
 
 
 
