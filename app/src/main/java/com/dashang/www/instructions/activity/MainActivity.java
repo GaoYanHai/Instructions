@@ -1,8 +1,11 @@
 package com.dashang.www.instructions.activity;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -25,9 +28,13 @@ import android.widget.TextView;
 import com.dashang.www.instructions.R;
 import com.dashang.www.instructions.adapter.MyPageAdapter;
 import com.dashang.www.instructions.adapter.MyRecyclerViewAdapter;
+import com.dashang.www.instructions.utils.SpUtils;
 import com.dashang.www.instructions.utils.ToastUtil;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,7 +50,18 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mRlv_recycler;
     private DrawerLayout mDl_layout;
     private MyRecyclerViewAdapter myRecyclerViewAdapter;
+    private boolean isComplete;
 
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what==1){
+                SpUtils.putBoolean(MainActivity.this,"isComplete",true);
+                initView();
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,13 +72,25 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+        isComplete = SpUtils.getBoolean(this,"isComplete",false);
+        try {
+            String fileNames[] = this.getAssets().list("instruct");
+            String path = "/sdcard/images/";
+            File file=new File(path);
+            File[] files=file.listFiles();
 
-        initView();
+            if (isComplete==false||files.length!=fileNames.length){
+                copyFilesFassets(this);
+            }else {
+                initView();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         screenHeight = displayMetrics.heightPixels;
         screenWidth = displayMetrics.widthPixels;
-
-
 
     }
 
@@ -105,7 +135,8 @@ public class MainActivity extends AppCompatActivity {
                 float y = motionEvent.getY();
 
                 //点击屏幕中间弹出popupwindow
-                if (x > mMiddleX / 2 && x < (screenWidth - mMiddleX / 2) && y > mMiddleY / 2 && y < (screenHeight - mMiddleY / 2)) {
+//                if (x > mMiddleX / 2 && x < (screenWidth - mMiddleX / 2) && y > mMiddleY / 2 && y < (screenHeight - mMiddleY / 2)) {
+                if (x > mMiddleX / 2 && x < (screenWidth - mMiddleX / 2) ) {
 
                     if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                         showPopwindow();
@@ -255,8 +286,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        popupWindowBottom.dismiss();
-        popupWindowTop.dismiss();
+            popupWindowBottom.dismiss();
+            popupWindowTop.dismiss();
     }
 
 
@@ -265,19 +296,69 @@ public class MainActivity extends AppCompatActivity {
         String path = "/sdcard/images/";
         File file=new File(path);
         File[] files=file.listFiles();
-        if (files == null){
+        ArrayList<String> s = new ArrayList<>();
+        if (!file.exists()){
+            file.mkdirs();  // 文件不存在 创建文件
             Log.e("error","空目录");
             ToastUtil.showLong(this,"文件不存在或已被删除！");
             return null;
-        }
-        ArrayList<String> s = new ArrayList<>();
-        for(int i =0;i<files.length;i++){
-            if (checkIsImageFile(files[i].getAbsolutePath())){
-                s.add(files[i].getAbsolutePath());
+        }else {
+            if (files.length>0){
+
+                for(int i =0;i<files.length;i++){
+                    if (checkIsImageFile(files[i].getAbsolutePath())){
+                        s.add(files[i].getAbsolutePath());
+                    }
+                }
+                return s;
             }
+
         }
-        return s;
+        return null;
     }
+
+    //复制到sd卡的目录中去
+    public void copyFilesFassets(final Context context) {
+
+        String path = "/sdcard/images/";
+        File file=new File(path);
+        if (!file.exists()){
+            file.mkdirs();
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                InputStream is = null;
+                FileOutputStream fos = null;
+                try {
+                    String fileNames[] = context.getAssets().list("instruct");//获取assets目录下的所有文件及目录名
+                    //如果是文件
+                    for (String s:fileNames){
+                        Log.e(TAG, "copyFilesFassets:   文件" +s);
+                        is = context.getAssets().open("instruct/"+s);
+                        fos = new FileOutputStream(new File("/sdcard/images/",s));
+                        byte[] buffer = new byte[1024];
+                        int byteCount=0;
+                        while((byteCount=is.read(buffer))!=-1) {//循环从输入流读取 buffer字节
+                            fos.write(buffer, 0, byteCount);//将读取的输入流写入到输出流
+                        }
+                        Log.e(TAG, "copyFilesFassets:   读写完成" );
+
+                    }
+
+                    fos.flush();//刷新缓冲区
+                    is.close();
+                    fos.close();
+                    handler.sendEmptyMessage(1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+
+                }
+            }
+        }).start();
+
+    }
+
 
 
     //过滤文件夹
