@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                         showPopwindowTop();
                         mPb_progress.setProgress(mVp_main.getCurrentItem() + 1);
                         //设置进度数字
-                        mTv_numberpb.setText("第" + mPb_progress.getProgress() + "页" + "/" + "共" + mPb_progress.getMax() + "页");
+                        mTv_numberpb.setText(getResources().getString(R.string.di) + mPb_progress.getProgress() + getResources().getString(R.string.page) + "/" + getResources().getString(R.string.sum) + mPb_progress.getMax() +getResources().getString(R.string.page) );
                         // ToastUtil.showShort(getApplicationContext(),"点击了中间位置！");
                     }
                 } else if (x < mMiddleX / 2) {
@@ -199,7 +199,8 @@ public class MainActivity extends AppCompatActivity {
                 int currentItem = mVp_main.getCurrentItem();
                 mVp_main.setCurrentItem(currentItem - 1);
                 mPb_progress.setProgress(mVp_main.getCurrentItem() + 1);
-                mTv_numberpb.setText("第" + mPb_progress.getProgress() + "页" + "/" + "共" + mPb_progress.getMax() + "页");
+                mTv_numberpb.setText(getResources().getString(R.string.di) + mPb_progress.getProgress() + getResources().getString(R.string.page) + "/" + getResources().getString(R.string.sum) + mPb_progress.getMax() +getResources().getString(R.string.page) );
+//                mTv_numberpb.setText("第" + mPb_progress.getProgress() + "页" + "/" + "共" + mPb_progress.getMax() + "页");
 
             }
         });
@@ -211,7 +212,8 @@ public class MainActivity extends AppCompatActivity {
 
                 mVp_main.setCurrentItem(currentItem + 1);
                 mPb_progress.setProgress(mVp_main.getCurrentItem() + 1);
-                mTv_numberpb.setText("第" + mPb_progress.getProgress() + "页" + "/" + "共" + mPb_progress.getMax() + "页");
+                mTv_numberpb.setText(getResources().getString(R.string.di) + mPb_progress.getProgress() + getResources().getString(R.string.page) + "/" + getResources().getString(R.string.sum) + mPb_progress.getMax() +getResources().getString(R.string.page) );
+//                mTv_numberpb.setText("第" + mPb_progress.getProgress() + "页" + "/" + "共" + mPb_progress.getMax() + "页");
 
             }
         });
