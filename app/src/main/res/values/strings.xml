@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">说明书</string>
+    <string name="app_name">用户手册</string>
     <string name="previous">上一页</string>
     <string name="next">下一页</string>
     <string name="catalog">目录</string>
-    <string name="di">第</string>
-    <string name="page">页</string>
-    <string name="sum">共</string>
+    <string name="di">第 </string>
+    <string name="page"> 页</string>
+    <string name="sum">共 </string>
 </resources>

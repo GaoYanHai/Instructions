@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">Instructions</string>
+    <string name="app_name">User manual</string>
     <string name="previous">previous page</string>
     <string name="next">next page</string>
     <string name="catalog">catalog</string>
     <string name="di"></string>
-    <string name="page">page</string>
-    <string name="sum">sum</string>
+    <string name="page"> page</string>
+    <string name="sum">sum </string>
 </resources>
